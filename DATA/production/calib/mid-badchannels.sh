@@ -22,8 +22,10 @@ WORKFLOW="o2-dpl-raw-proxy $ARGS_ALL --dataspec \"$MID_RAW_PROXY_INSPEC\" --chan
 WORKFLOW+="o2-mid-raw-to-digits-workflow $ARGS_ALL | "
 workflow_has_parameter CTF && WORKFLOW+="o2-mid-entropy-encoder-workflow $ARGS_ALL | o2-ctf-writer-workflow $ARGS_ALL $CONFIG_CTF | "
 WORKFLOW+="o2-mid-calibration-workflow $ARGS_ALL | "
-WORKFLOW+="o2-calibration-ccdb-populator-workflow $ARGS_ALL --configKeyValues \"$ARGS_ALL_CONFIG\" --ccdb-path=\"http://o2-ccdb.internal\" --sspec-min 0 --sspec-max 0 | "
-WORKFLOW+="o2-calibration-ccdb-populator-workflow $ARGS_ALL --configKeyValues \"$ARGS_ALL_CONFIG\" --ccdb-path=\"http://alio2-cr1-flp199.cern.ch:8083\" --sspec-min 1 --sspec-max 1 --name-extention dcs | "
+has_processing_step "MID_PUSH_MASKS" && {
+    WORKFLOW+="o2-calibration-ccdb-populator-workflow $ARGS_ALL --configKeyValues \"$ARGS_ALL_CONFIG\" --ccdb-path=\"http://o2-ccdb.internal\" --sspec-min 0 --sspec-max 0 | "
+    WORKFLOW+="o2-calibration-ccdb-populator-workflow $ARGS_ALL --configKeyValues \"$ARGS_ALL_CONFIG\" --ccdb-path=\"http://alio2-cr1-flp199.cern.ch:8083\" --sspec-min 1 --sspec-max 1 --name-extention dcs | "
+}
 workflow_has_parameter QC && WORKFLOW+="o2-qc $ARGS_ALL --config consul-json://${CONSUL_ENDPOINT}/o2/components/qc/ANY/any/mid-calib-qcmn --local --host localhost | "
 WORKFLOW+="o2-dpl-run $ARGS_ALL $GLOBALDPLOPT"
 
